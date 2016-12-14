@@ -1,10 +1,14 @@
 .PHONY: docs
 
 init:
-    pip install -r requirements.txt
+	pip3 install -r requirements.txt
+
+test-publish:
+	python3 setup.py register -r pypitest
+	python3 setup.py sdist upload -r pypitest
+	rm -rf build dist couchdiscover.egg-info
 
 publish:
-    python setup.py register
-    python setup.py sdist upload
-    # python setup.py bdist_wheel --universal upload
-    rm -fr build dist .egg couchdiscover.egg-info
+	python3 setup.py register -r pypi
+	python3 setup.py sdist upload -r pypi
+	rm -fr build dist couchdiscover.egg-info
