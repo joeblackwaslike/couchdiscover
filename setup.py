@@ -11,6 +11,7 @@ if not version:
 with open('README.md', 'rt') as fd:
     readme = fd.read()
 
+# https://github.com/kelproject/pykube/tarball/e62ff67d60852247b3dec7d1cc9c0b062a15f14b#egg=pykube
 setup(
     name='couchdiscover',
     version=version,
@@ -24,11 +25,11 @@ setup(
     license='Apache 2.0',
     packages=['couchdiscover'],
     package_data={'': ['LICENSE']},
-    dependency_links=['https://github.com/kelproject/pykube/tarball/e62ff67d60852247b3dec7d1cc9c0b062a15f14b#egg=pykube'],
+    dependency_links=['https://github.com/kelproject/pykube/tarball/e62ff67d60852247b3dec7d1cc9c0b062a15f14b#egg=pykube-0.14.0a1'],
     install_requires=[
         'CouchDB',
         'requests',
-        'pykube'
+        'pykube==0.14.0a1'
     ],
     entry_points=dict(
         console_scripts=['couchdiscover = couchdiscover.entrypoints:main']),
