@@ -49,24 +49,24 @@ class KubeHostname:
         """Retrieves the first part of the kubernetes hostname.
         Example: `couchdb-0`
         """
-        return self._join_node(self.petset, self.index)
+        return self._join_node(self.statefulset, self.index)
 
     @node.setter
     def node(self, node):
         """Allows the first part of the kubernetes hostname to be set and a
         new hostname object recalculated.
         """
-        self.petset, self.index = self._split_node(node)
+        self.statefulset, self.index = self._split_node(node)
 
     @property
     def is_master(self):
-        """Determines whether the index is 0 for when the master of a PetSet
-        needs to be determined."""
+        """Determines whether the index is 0 for when the master of a
+        StatefulSet needs to be determined."""
         return self.index == 0
 
     def __repr__(self):
         class_name = type(self).__name__
-        return '{}(\'{}\')'.format(class_name, self.fqdn)
+        return "{}('{}')".format(class_name, self.fqdn)
 
     def __str__(self):
         return self.fqdn
@@ -78,17 +78,17 @@ class KubeHostname:
 
     @staticmethod
     def _split_node(node):
-        petset, index = node.split('-')
+        statefulset, index = node.split('-')
         index = int(index)
-        return petset, index
+        return statefulset, index
 
     def _init_from_fqdn(self, fqdn):
         node, service, namespace, domain = self._split_fqdn(fqdn)
-        petset, index = self._split_node(node)
+        statefulset, index = self._split_node(node)
         self.service = service
         self.namespace = namespace
         self.domain = domain
-        self.petset = petset
+        self.statefulset = statefulset
         self.index = index
 
     @staticmethod
@@ -96,8 +96,8 @@ class KubeHostname:
         return '.'.join((node, service, namespace, 'svc', domain))
 
     @staticmethod
-    def _join_node(petset, index):
-        return '{}-{}'.format(petset, str(index))
+    def _join_node(statefulset, index):
+        return '{}-{}'.format(statefulset, str(index))
 
     def clone(self, master=False, index=None):
         """Clone's a copy of the current KubeHostname object.
@@ -158,9 +158,10 @@ class KubeAPIClient:
         """Get's endpoint by name or/or selector."""
         return self._get_api_object(pykube.Endpoint, name, selector, namespace)
 
-    def get_petset(self, name=None, selector=None, namespace=None):
-        """Get's petset by name or/or selector."""
-        return self._get_api_object(pykube.PetSet, name, selector, namespace)
+    def get_statefulset(self, name=None, selector=None, namespace=None):
+        """Get's statefulset by name or/or selector."""
+        return self._get_api_object(
+            pykube.StatefulSet, name, selector, namespace)
 
     def get_secret(self, name=None, key=None, selector=None, namespace=None):
         """Get's secret by name or/or selector."""
@@ -185,9 +186,9 @@ class KubeAPIClient:
         return obj
 
     @staticmethod
-    def _get_container(petset=None, container=None):
-        if petset:
-            pod = petset['spec']['template']
+    def _get_container(statefulset=None, container=None):
+        if statefulset:
+            pod = statefulset['spec']['template']
         if container:
             for cont in pod['spec']['containers']:
                 if cont['name'] == container:
@@ -214,15 +215,15 @@ class KubeAPIClient:
                 ref = v_from.get('configMapKeyRef')
                 return self.get_configmap(name=ref['name'], key=ref['key'])
 
-    def get_environment(self, petset, container):
-        """Get's the environment for a container of a petset.
+    def get_environment(self, statefulset, container):
+        """Get's the environment for a container of a statefulset.
 
         Environment returned is a dictionary key'd by environment variable
         name, and who's value has been resolved in the case of externally
         referenced configmaps and secrets.
         """
-        petset = self.get_petset(petset)
-        cont = self._get_container(petset, container)
+        statefulset = self.get_statefulset(statefulset)
+        cont = self._get_container(statefulset, container)
         env = self._key_container_env(cont)
         return {k: self._lookup_env_value(v) for k, v in env.items()}
 
@@ -245,7 +246,7 @@ class KubeInterface(util.ReprMixin):
     @property
     def hosts(self):
         """Returns a tuple of full fqdn's for all nodes in the CouchDB
-        petset.
+        statefulset.
         """
         service = self._host.service
         endp = self.api.get_endpoint(service)
@@ -255,7 +256,7 @@ class KubeInterface(util.ReprMixin):
 
     @property
     def ports(self):
-        """Returns a tuple of ports for the CouchDB petset."""
+        """Returns a tuple of ports for the CouchDB statefulset."""
         service = self._host.service
         endp = self.api.get_endpoint(service)
         ports = [port['port'] for port in endp['subsets'][0]['ports']]
@@ -263,9 +264,9 @@ class KubeInterface(util.ReprMixin):
 
     @property
     def creds(self):
-        """Returns a tuple of user/pass for the CouchDB petset."""
-        petset = self._host.petset
-        env = self.api.get_environment(petset, petset)
+        """Returns a tuple of user/pass for the CouchDB statefulset."""
+        statefulset = self._host.statefulset
+        env = self.api.get_environment(statefulset, statefulset)
         user = env.get('COUCHDB_ADMIN_USER', config.DEFAULT_CREDS[0])
         password = env.get('COUCHDB_ADMIN_PASS', config.DEFAULT_CREDS[1])
         return (user, password)
@@ -274,11 +275,11 @@ class KubeInterface(util.ReprMixin):
     def cluster_size(self):
         """Returns the expected cluster size by qerying the
         `COUCHDB_CLUSTER_SIZE` environment variable, and falling back to the
-        number of replicas in the petset.  For most purposes, you can rely on
-        default behavior here.
+        number of replicas in the statefulset.  For most purposes, you can rely
+        on default behavior here.
         """
-        petset = self._host.petset
-        pobj = self.api.get_petset(petset)
-        env = self.api.get_environment(petset, petset)
-        size = pobj['spec']['replicas']
+        statefulset = self._host.statefulset
+        ss = self.api.get_statefulset(statefulset)
+        env = self.api.get_environment(statefulset, statefulset)
+        size = ss['spec']['replicas']
         return env.get('COUCHDB_CLUSTER_SIZE', size)

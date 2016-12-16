@@ -24,7 +24,7 @@ class ContainerEnvironment(util.ReprMixin):
     """Represents a self configuring environment object that can be passed to
     initialize other objects.
     """
-    _public_attrs = ('index', 'petset', 'cluster_size', 'ports', 'creds')
+    _public_attrs = ('index', 'statefulset', 'cluster_size', 'ports', 'creds')
 
     def __init__(self, env=None, host=None):
         self.env = env
@@ -61,23 +61,23 @@ class ContainerEnvironment(util.ReprMixin):
         return self.host.index
 
     @property
-    def petset(self):
-        """Returns the petset name of the current node."""
-        return self.host.petset
+    def statefulset(self):
+        """Returns the statefulset name of the current node."""
+        return self.host.statefulset
 
     @property
     def ports(self):
-        """Returns the ports used by the CouchDB petset."""
+        """Returns the ports used by the CouchDB statefulset."""
         return self.kube.ports
 
     @property
     def creds(self):
-        """Returns the auth credentials for the CouchDB petset."""
+        """Returns the auth credentials for the CouchDB statefulset."""
         return self.kube.creds
 
     @property
     def cluster_size(self):
-        """Returns the expected cluster size of the CouchDB petset."""
+        """Returns the expected cluster size of the CouchDB statefulset."""
         return self.kube.cluster_size
 
     @property

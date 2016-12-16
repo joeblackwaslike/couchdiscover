@@ -1,34 +1,35 @@
 import re
-# import ez_setup
-# ez_setup.use_setuptools()
-
 from setuptools import setup
 
 with open('couchdiscover/__init__.py', 'rt') as fd:
-    VERSION = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
-if not VERSION:
+if not version:
     raise RuntimeError('Cannot find version information')
 
 with open('README.md', 'rt') as fd:
-    README = fd.read()
+    readme = fd.read()
 
 setup(
     name='couchdiscover',
-    version=VERSION,
+    version=version,
     description='Autodiscovery & Clustering for CouchDB 2.0 with Kubernetes',
-    long_description=README,
+    long_description=readme,
     keywords = ['couchdb', 'kubernetes', 'cluster'],
     author='Joe Black',
     author_email='joeblack949@gmail.com',
     url='https://github.com/joeblackwaslike/couchdiscover',
-    download_url='https://github.com/joeblackwaslike/couchdiscover/tarball/0.2.2',
+    download_url='https://github.com/joeblackwaslike/couchdiscover/tarball/0.2.3',
     license='Apache 2.0',
     packages=['couchdiscover'],
     package_data={'': ['LICENSE']},
-    dependency_links=['https://github.com/kelproject/pykube/tarball/cd5b511474bf8854d122af371681fb1dc467a1b9#egg=pykube'],
-    install_requires=['CouchDB', 'requests', 'pykube'],
+    dependency_links=['https://github.com/kelproject/pykube/tarball/e62ff67d60852247b3dec7d1cc9c0b062a15f14b#egg=pykube'],
+    install_requires=[
+        'CouchDB',
+        'requests',
+        'pykube'
+    ],
     entry_points=dict(
         console_scripts=['couchdiscover = couchdiscover.entrypoints:main']),
     classifiers=[

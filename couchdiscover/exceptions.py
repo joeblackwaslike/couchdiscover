@@ -59,14 +59,10 @@ class CustomErrorMixin:
 
     def _process_args(self, args, kwargs):
         msg = self._process_msg(kwargs)
-        print('msg: ', msg)
         if args:
             orig = self._process_orig_msg(args)
-            print('orig: ', orig)
             msg = self._merge_msgs(msg, orig)
-            print('msg: ', msg)
         args = (msg,)
-        print('args: ', args)
         return args
 
 
@@ -132,7 +128,7 @@ class CouchAddNodeError(CouchDiscHTTPError):
 class InvalidKubeHostnameError(CouchDiscGeneralError):
     """Invalid kubernetes hostname
 
-    Raised when a host doesn't match the signature of a kubernetes petset
+    Raised when a host doesn't match the signature of a kubernetes statefulset
     hostname.
 
     Provides a `_msg` that includes the host passed in as a kwarg.
@@ -140,8 +136,8 @@ class InvalidKubeHostnameError(CouchDiscGeneralError):
     Example:
     >>> raise InvalidKubeHostnameError(host='google.com')
     InvalidKubeHostnameError: The Hostname: google.com doesn't match the
-    signature of a kubernetes petset hostname.
+    signature of a kubernetes statefulset hostname.
     """
 
     _msg = ("The Hostname: {host} doesn't match the signature of a kubernetes"
-            " petset hostname.")
+            " statefulset hostname.")
