@@ -11,7 +11,6 @@ if not version:
 with open('README.md', 'rt') as fd:
     readme = fd.read()
 
-# https://github.com/kelproject/pykube/tarball/e62ff67d60852247b3dec7d1cc9c0b062a15f14b#egg=pykube
 setup(
     name='couchdiscover',
     version=version,

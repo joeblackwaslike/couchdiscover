@@ -311,7 +311,7 @@ class CouchInitClient:
                 return req
             else:
                 raise CouchAddNodeError(
-                    'error adding node: %s', remote, req=req)
+                    'error adding node: %s resp: %s', remote, req)
 
     def finish(self):
         """Finish the cluster."""
