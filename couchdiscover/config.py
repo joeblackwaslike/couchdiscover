@@ -12,7 +12,7 @@ import os
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'production')
 
-LOG_FORMAT = '%(asctime) %(levelname) %(module)s.%(funcName)s] %(message)s'
+LOG_FORMAT = '%(asctime)s %(levelname)s %(module)s.%(funcName)s] %(message)s'
 DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'DEBUG').upper()
 
