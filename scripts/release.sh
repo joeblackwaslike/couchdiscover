@@ -15,7 +15,10 @@ NEXT_TAG="${CURRENT_MAJOR}.${CURRENT_MINOR}.${NEXT_RELEASE}"
 
 sed -i "/^version/s/$CURRENT_TAG/$NEXT_TAG/g" templates/vars.yaml
 inv templates
-sed -i "/VERSION/s/$CURRENT_TAG/$NEXT_TAG/g" Dockerfile couchdiscover/__init__.py
+for file in Dockerfile couchdiscover/__init__.py; do
+    sed -i "/VERSION/s/$CURRENT_TAG/$NEXT_TAG/g" $file
+done
+
 git add .
 git commit -m "Tag for release: $NEXT_TAG ..."
 
