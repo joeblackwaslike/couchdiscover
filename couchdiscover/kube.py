@@ -5,7 +5,7 @@ couchdiscover.kube
 This module contains constants and classes that abstract the details of
 working with the kubernetes api as higher level objects.
 
-:copyright: (c) 2016 by Joe Black.
+:copyright: (c) 2017 by Joe Black.
 :license: Apache2.
 """
 

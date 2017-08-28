@@ -22,10 +22,9 @@ from .exceptions import (
 
 __title__ = 'couchdiscover'
 __version__ = '0.2.3'
-__build__ = 0x000203
-__author__ = "Joe Black <joe@valuphone.com>"
+__author__ = "Joe Black <me@joeblack.nyc>"
 __license__ = 'Apache 2.0'
-__copyright__ = 'Copyright 2016 Joe Black'
+__copyright__ = 'Copyright 2017 Joe Black'
 
 
 util.setup_logging(

@@ -1,5 +1,5 @@
 import re
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('couchdiscover/__init__.py', 'rt') as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
@@ -20,16 +20,18 @@ setup(
     author='Joe Black',
     author_email='joeblack949@gmail.com',
     url='https://github.com/joeblackwaslike/couchdiscover',
-    download_url='https://github.com/joeblackwaslike/couchdiscover/tarball/0.2.3',
+    download_url=(
+        'https://github.com/joeblackwaslike/couchdiscover/tarball/%s' %
+        version
+    ),
     license='Apache 2.0',
     zip_safe=False,
-    packages=['couchdiscover'],
+    packages=find_packages(),
     package_data={'': ['LICENSE']},
-    dependency_links=['https://github.com/kelproject/pykube/tarball/e62ff67d60852247b3dec7d1cc9c0b062a15f14b#egg=pykube-0.14.0a1'],
     install_requires=[
         'CouchDB',
         'requests',
-        'pykube==0.14.0a1'
+        'pykube>=0.16a1'
     ],
     entry_points=dict(
         console_scripts=['couchdiscover = couchdiscover.entrypoints:main']),

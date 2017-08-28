@@ -4,7 +4,7 @@ couchdiscover.util
 
 This module contains various utility functions and Mixins.
 
-:copyright: (c) 2016 by Joe Black.
+:copyright: (c) 2017 by Joe Black.
 :license: Apache2.
 """
 

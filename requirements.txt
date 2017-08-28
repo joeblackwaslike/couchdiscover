@@ -1,3 +1,3 @@
-git+https://github.com/kelproject/pykube@e62ff67d60852247b3dec7d1cc9c0b062a15f14b#egg=pykube-0.14.0a1
+pykube>=0.16a1
 requests==2.12.3
 CouchDB==1.1

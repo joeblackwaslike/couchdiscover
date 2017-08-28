@@ -1,0 +1,69 @@
+---
+target: '.travis.yml'
+---
+
+{% set github_user = data.get('vars')['github']['user'] -%}
+{% set github_org = data.get('vars')['github']['org'] -%}
+{% set docker_user = data.get('vars')['docker']['user'] -%}
+{% set docker_org = data.get('vars')['docker']['user'] -%}
+{% if docker_org == 'joeblackwaslike' -%}
+  {% set docker_pass = env.get('DOCKER_PASS_JOEBLACKWASLIKE') -%}
+  {% set pypi_pass = env.get('PYPI_PASS_JOEBLACKWASLIKE') -%}
+{% endif %}
+{% set github_token = env.get('GITHUB_TOKEN') -%}
+{% set slack_secret = env.get('TRAVIS_SLACK_SECRET') -%}
+
+addons:
+  apt:
+    packages:
+    - realpath
+language: python
+python:
+- "3.6"
+services: docker
+env:
+  global:
+  - GITHUB_USER={{ github_user }}
+  - GITHUB_ORG={{ github_org }}
+  - DOCKER_USER={{ docker_user }}
+  - DOCKER_ORG={{ docker_org }}
+{% if docker_pass %}
+  # DOCKER_PASS
+  - secure: {{ shell('travis encrypt --no-interactive "DOCKER_PASS={}"'.format(docker_pass)).out }}
+{% endif %}
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+{% if docker_org == 'telephoneorg' and slack_secret %}
+  slack:
+    rooms:
+    - secure: {{ shell('travis encrypt --no-interactive "{}"'.format(slack_secret)).out }}
+    on_success: always
+    on_failure: always
+{%- endif %}
+
+before_install:
+- source scripts/ci/environment.sh
+- pip install invoke
+
+install: pip install -e .
+
+script: true
+
+{% if not github_org == 'telephoneorg' and pypi_pass -%}
+deploy:
+  provider: pypi
+  user: joeblackwaslike
+  password:
+    secure: {{ shell('travis encrypt --no-interactive "{}"'.format(pypi_pass)).out }}
+  on:
+    tags: true
+  skip_cleanup: true
+
+after_deploy:
+- inv docker.build
+- ci-tag-build
+- hub-push
+- hub-update-readme
+{%- endif %}

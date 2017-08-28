@@ -5,7 +5,7 @@ couchdiscover.couch
 This module contains constants and classes that abstract the details of
 working with and clustering CouchDB 2.0 as higher level objects.
 
-:copyright: (c) 2016 by Joe Black.
+:copyright: (c) 2017 by Joe Black.
 :license: Apache2.
 """
 
@@ -31,15 +31,14 @@ class CouchServer(util.ReprMixin):
 
     def __init__(self, proto='http', host='localhost',
                  port=config.DEFAULT_PORTS[0], creds=config.DEFAULT_CREDS):
-        self._up = None
         self._args = dict(proto=proto, host=host, port=int(port), auth=creds)
-        self.url = self._get_server_url()
+        self.url = self._get_url()
         self._couch = couchdb.Server(self.url)
-        self._wrapped = self._couch
         self._session = self._get_session()
+        self._wrapped = self._couch
         self.type = self._detect_type()
 
-    def _get_server_url(self):
+    def _get_url(self):
         args = self._args
         url = []
         url.append('{}://'.format(args['proto']))
@@ -65,7 +64,7 @@ class CouchServer(util.ReprMixin):
             else:
                 return 'data'
 
-    def _build_url(self, uri=None):
+    def _build_url(self, uri=''):
         if uri:
             if not uri.startswith('/'):
                 uri = '/' + uri
@@ -120,7 +119,7 @@ class CouchServer(util.ReprMixin):
         """Returns a generator iterating all DB objects."""
         return self.request(uri='/_all_dbs')
 
-    def request(self, verb='get', uri=None, params=None, data=None,
+    def request(self, verb='get', uri='', params=None, data=None,
                 headers=None, files=None):
         """Send a low level HTTP request."""
         url = self._build_url(uri)
@@ -149,22 +148,20 @@ class CouchInitClient:
 
     def _wait_for_couch(self):
         args = self._args
-        url = 'http://{}:{}/_up'.format(args['host'], args['ports'][0])
-        up = False
+        url = 'http://{}:{}'.format(args['host'], args['ports'][0])
         log.info('Waiting for host: %s to be up', url)
-        while not up:
+        while True:
             try:
                 req = requests.get(url)
-                up = True
                 log.info('Host is up')
-                del req
+                break
             except requests.RequestException:
                 log.info('Host: %s not up yet, retrying in 5s', url)
                 time.sleep(5)
 
     def _upgrade_auth_if_enabled(self):
         status = self.status
-        if status == 'cluster_disabled':
+        if 'disabled' in status:
             self._secure = False
         else:
             self._upgrade_auth()

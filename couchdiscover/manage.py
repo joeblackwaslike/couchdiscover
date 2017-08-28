@@ -5,7 +5,7 @@ couchdiscover.manage
 This module contains the main logic and highest level management objects along
 with their configuration.
 
-:copyright: (c) 2016 by Joe Black.
+:copyright: (c) 2017 by Joe Black.
 :license: Apache2.
 """
 

@@ -4,7 +4,7 @@ couchdiscover.entrypoints
 
 This module contains functions that exist as entrypoints into the package.
 
-:copyright: (c) 2016 by Joe Black.
+:copyright: (c) 2017 by Joe Black.
 :license: Apache2.
 """
 
