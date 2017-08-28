@@ -38,7 +38,7 @@ notifications:
 {% if docker_org == 'telephoneorg' and slack_secret %}
   slack:
     rooms:
-    - secure: {{ shell('travis encrypt --no-interactive "{}"'.format(slack_secret)).out }}
+    - secure: {{ shell('travis encrypt --no-interactive "{}"'.format(slack_secret)).out.strip() }}
     on_success: always
     on_failure: always
 {%- endif %}
@@ -56,7 +56,7 @@ deploy:
   provider: pypi
   user: joeblackwaslike
   password:
-    secure: {{ shell('travis encrypt --no-interactive "{}"'.format(pypi_pass)).out }}
+    secure: {{ shell('travis encrypt --no-interactive "{}"'.format(pypi_pass)).out.strip() }}
   on:
     tags: true
   skip_cleanup: true
