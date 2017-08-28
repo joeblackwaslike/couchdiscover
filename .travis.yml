@@ -1,0 +1,45 @@
+addons:
+  apt:
+    packages:
+    - realpath
+language: python
+python:
+- "3.6"
+services: docker
+env:
+  global:
+  - GITHUB_USER=joeblackwaslike
+  - GITHUB_ORG=joeblackwaslike
+  - DOCKER_USER=joeblackwaslike
+  - DOCKER_ORG=joeblackwaslike
+  # DOCKER_PASS
+  - secure: "rmDlZNvHA86ncTLdhvigtu5KTtSFr+mUIUpiEcjevjsIFJbITN0kTAnbaQNSUuH9YwG06FJFKu3gkW6ofmYAqGJe/h9Rl5/PYMDU+X/Gchm45E5tY9k5XZV0pCFBrFCvtI45bsNoAP9iDV/W3QBmccLBUT6rBxwjqa6S4k4lUs6WRItOz3WSyYwHtHp6YeRCJgkCU9Ft5PYmXxZ18kwBL78oN5/tqCRT1fwSYrDOxo7Jyvx3Cz1wFepXuNtqMSN8sIzV3osP3YkRUZQjk4ntQPFljARx5fukgy71JpmQLRB3tU0zkFY3Mnqyl6Y4Ko5CLTgB7BVkW4M7WyNbjH/8gQxzIWodFzFu8Qz6wbOZbfcFNXWMFi9UHRoDvVUJ4yUcWKRRKU75K/iXTsZOMA7LZr3IiOtO0Fc2T3RHHQfvz2JXtipFx83skfHVvoCYdkG49LpnoHhfARnZemPtBynfaRjOR3uZvhanoarhFuI3rzhfnS9uaRcQkJ5m0UazJAWdm2brj6jW2v7h++irIGR0H2HpaDEKdVKngxyfGILwQpDF80v6qXmDQ531cKMKTRIayiWAY8jW0cRNEU8gftTp606veDQjZhAIYe5zanO6BfUoqMFVlWnmoCoJpsIMPedT64jN9/CxH5AP2LGWdUx85N97QnIIXWdDH5i9t0j/IPw="
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+
+before_install:
+- source scripts/ci/environment.sh
+- pip install invoke
+
+install: pip install -e .
+
+script: true
+
+deploy:
+  provider: pypi
+  user: joeblackwaslike
+  password:
+    secure: "lTZUfAtyAkhrqPX5UuWcMsbmxeprtfcVsKSdg6eh7gmgH6XavSWtzr2kUcIMED6MCznVohTo2kHE1jIAmGOk5wzbualLNUp7s686Ky6+Su1jZN/opL1zTU/DyVtaeu6CnF9LOoWUA06d+dKo7pXL4pps85PZe8rrOA9r0u/CRILgi+cnIz9EILcuVhg2a8kPBf7NV6BJXQG+QoU9kGk1Hlu6ZK8HWrDGAxcX3FPOMKIJL2fV2fQfZsMcJ2mE1leCZf/tlFRIh+5xBsUyu68VTWH0adnP6Gf3FEQyLNMry9Wk+pqWnZCJh1M3yUto9ocmJWZuk+GH3Sry1tbdVke+ZmNBngYPf7F/pOgNEzMtTZ44ZBz1DFE6v8DvITebTGLpjXtv9wyDHEJ19a3tYZfp2SADzWtKmSuCGfsL4GmGjVTSWdzaqrSZkG6sskTTUZlZ77x3Ezz104nWblo8LfgQPI4fpJN7Z0yPsUBZFyr1/GYUystjrkfA9u6Uk0PBHREpE2PIHjzn9O/8iQutH0+HvK8IrrAyRczeFrK7SZisxXvT3zSPVY1e57yABOIh90V11U6+ombdHsydpqIRqtHHQQUq9mJ4DmR4+gwKrXQ3nvsY6T9DY8Zs+ntMPC+Y7E7sAMCqRFIC9VYdIxV8L5lQ98Dfejps7QQBt6zQ7xTbh7Q="
+
+  on:
+    tags: true
+  skip_cleanup: true
+
+after_deploy:
+- inv docker.build
+- ci-tag-build
+- hub-push
+- hub-update-readme

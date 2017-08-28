@@ -137,8 +137,9 @@ class CouchServer(util.ReprMixin):
 
 class CouchInitClient:
     """Encapsulates a pair of CouchServer objects for admin and data ports."""
-    def __init__(self, host='localhost', ports=config.DEFAULT_PORTS,
+    def __init__(self, env=None, host='localhost', ports=config.DEFAULT_PORTS,
                  creds=config.DEFAULT_CREDS, proto='http'):
+        self.env = env
         self._secure = False
         self._args = dict(
             proto=proto, host=str(host), ports=ports, creds=creds)
@@ -183,7 +184,7 @@ class CouchInitClient:
     @property
     def disabled(self):
         """Returns True if status is `cluster_disabled`."""
-        return self.status == 'cluster_disabled'
+        return 'disabled' in self.status
 
     @property
     def enabled(self):
@@ -249,11 +250,14 @@ class CouchInitClient:
 
         data = None
         if action == 'add':
-            data = {'action': 'add_node', 'host': host, 'port': port}
+            data = dict(action='add_node', host=host, port=port)
         elif action == 'enable':
-            data = {'action': 'enable_cluster'}
+            data = dict(
+                action='enable_cluster',
+                node_count=self.env.cluster_size
+            )
         elif action == 'finish':
-            data = {'action': 'finish_cluster'}
+            data = dict(action='finish_cluster')
 
         if action in ('add', 'enable') and creds and len(creds) == 2:
             data['username'], data['password'] = creds
@@ -335,13 +339,14 @@ class CouchInitClient:
 class CouchManager:
     """Contains configuration data and topology of couch cluster."""
     def __init__(self, env):
+        self.env = env
         self.host = env.host
         self.ports = env.ports
         self.creds = env.creds
-        self.local = CouchInitClient(env.host, env.ports, env.creds)
+        self.local = CouchInitClient(env, env.host, env.ports, env.creds)
         if not self.is_master:
             mhost = env.host.clone(master=True)
-            self.master = CouchInitClient(mhost, env.ports, env.creds)
+            self.master = CouchInitClient(env, mhost, env.ports, env.creds)
 
     def __repr__(self):
         clss = type(self).__name__

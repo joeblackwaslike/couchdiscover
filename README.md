@@ -1,25 +1,20 @@
 # couchdiscover
+[![Build Status](https://travis-ci.org/joeblackwaslike/couchdiscover.svg?branch=master)](https://travis-ci.org/joeblackwaslike/couchdiscover) [![Github Repo](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/joeblackwaslike/couchdiscover) [![Pypi Version](https://img.shields.io/pypi/v/couchdiscover.svg)](https://pypi.python.org/pypi/couchdiscover) [![Pypi License](https://img.shields.io/pypi/l/couchdiscover.svg)](https://pypi.python.org/pypi/couchdiscover) [![Pypi Wheel](https://img.shields.io/pypi/wheel/couchdiscover.svg)](https://pypi.python.org/pypi/couchdiscover) [![Pypi Versions](https://img.shields.io/pypi/pyversions/couchdiscover.svg)](https://pypi.python.org/pypi/couchdiscover) [![Docker Pulls](https://img.shields.io/docker/pulls/joeblackwaslike/couchdiscover.svg)](https://hub.docker.com/r/joeblackwaslike/couchdiscover/)
 
-Maintainer: Joe Black <joeblack949@gmail.com>
-Repository: https://www.github.com/joeblackwaslike/couchdiscover
 
-Other repositories:
+## Maintainer
+Joe Black | <me@joeblack.nyc> | [github](https://github.com/joeblackwaslike)
 
-Images:
 
 ## Description
-
 Utilizes the Kubernetes and CouchDB 2.0 clustering API's for automating the process of creating a CouchDB 2.0 Cluster. The reqirements here vary significantly compared to the predecessor BigCouch.
 
 This module has an entrypoint stub called `couchdiscover` that will be created upon installation with setuptools.
 
 This tool is meant to be used in a kubernetes cluster as a sidecar container.
 
-See the docker project for this: [github](https://www.github.com/sip-li/docker-couchdiscover)
-
 
 ## Environment variables used by couchdiscover:
-
 ### `couchdb` container:
 * `COUCHDB_ADMIN_USER`: username to use when enabling the node, required.
 * `COUCHDB_ADMIN_PASS`: password to use when enabling the node, required.
@@ -32,7 +27,7 @@ See the docker project for this: [github](https://www.github.com/sip-li/docker-c
 
 ## How information is discovered
 
-In order to best use something that is essentially "zero configuration," it helps to understand how the necessary information is obtained from the environment and api's. 
+In order to best use something that is essentially "zero configuration," it helps to understand how the necessary information is obtained from the environment and api's.
 
 1. Initially a great deal of information is obtained by grabbing the hostname of the container that's part of a statefulset and parsing it.  This is how the namespace is determined, how hostnames are calculated later, the name of the statefulset to look for in the api, the name of the headless service, the node name, the index, whether a node is master or not, etc.
 
@@ -40,7 +35,6 @@ In order to best use something that is essentially "zero configuration," it help
 
 
 ## Main logic
-
 The main logic is performed in the `manage` module's `ClusterManager` object's `run` method.  I think most of it is relatively straighforward.
 
 ```python
